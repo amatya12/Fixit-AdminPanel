@@ -1,8 +1,35 @@
-// in src/App.js
 import React from 'react';
-import { Admin } from 'react-admin';
-import dataProvider from './utils/dataProvider'
+import { Admin, Resource, } from 'react-admin';
+import dataProvider from './utils/dataProvider';
+import authProvider from './utils/authProvider';
+import Dashboard from './components/Dashboard/Dashboard';
+import { UserList, UserCreate, UserEdit } from './components/resources/user';
 
-const App = () => <Admin dataProvider={dataProvider} />;
+import UserIcon from '@material-ui/icons/Group';
+import RoleIcon from '@material-ui/icons/Accessibility';
+import { RoleList, RoleCreate, RoleEdit } from './components/resources/role';
+import LoginPage from './components/Login/LoginForm';
+
+const App = () => (
+  <Admin
+    dataProvider={dataProvider}
+    authProvider={authProvider}
+    dashboard={Dashboard}
+    loginPage={LoginPage}
+
+  >
+    {/* {permissions => [
+
+      permissions === 'admin' ? <Resource name="users" list={UserList} icon={UserIcon} /> : null,
+
+      permissions === 'moderator' ? <Resource name="roles" list={RoleList} icon={RoleIcon} /> : null
+
+    ]} */}
+
+    <Resource name="user" list={UserList} create={UserCreate} icon={UserIcon} />
+    <Resource name="role" list={RoleList} create={RoleCreate} edit={RoleEdit} icon={RoleIcon} />
+
+  </Admin>
+);
 
 export default App;

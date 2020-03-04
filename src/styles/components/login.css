@@ -1,0 +1,7 @@
+.signInButton {
+    float:none;
+    position:static;
+    display:block;
+    margin:auto;
+    width:max-content;
+  }
