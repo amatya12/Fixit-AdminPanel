@@ -1,6 +1,5 @@
 import React from 'react';
 import { List, Datagrid, TextField, Filter, TextInput, Edit, SimpleForm, Create, } from 'react-admin';
-import { DisabledInput } from 'react-admin';
 
 export const RoleList = (props) => (
     <List filters={<RoleFilter />} {...props} >
