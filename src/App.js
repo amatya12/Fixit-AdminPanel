@@ -3,8 +3,9 @@ import { Admin, Resource, } from 'react-admin';
 import dataProvider from './utils/dataProvider';
 import authProvider from './utils/authProvider';
 import Dashboard from './components/Dashboard/Dashboard';
-import { UserList, UserCreate, UserEdit } from './components/resources/user';
+import { UserList, UserCreate, } from './components/resources/user';
 import { CategoryList, CategoryCreate, CategoryEdit } from './components/resources/category';
+import { SubCategoryList, SubCategoryCreate, SubCategoryEdit, } from './components/resources/subCategory';
 import UserIcon from '@material-ui/icons/Group';
 import RoleIcon from '@material-ui/icons/Accessibility';
 import CategoryIcon from '@material-ui/icons/Category';
@@ -31,6 +32,7 @@ const App = () => (
     <Resource name="user" list={UserList} create={UserCreate} icon={UserIcon} />
     <Resource name="role" list={RoleList} create={RoleCreate} edit={RoleEdit} icon={RoleIcon} />
     <Resource name="category" list={CategoryList} create={CategoryCreate} edit={CategoryEdit} icon={CategoryIcon} />
+    <Resource name="subCategory" list={SubCategoryList} create={SubCategoryCreate} edit={SubCategoryEdit} icon={SubCategoryIcon} />
 
   </Admin>
 );
