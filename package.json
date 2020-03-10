@@ -41,6 +41,6 @@
     ]
   },
   "devDependencies": {
-    "react-admin": "^3.2.1"
+    "react-admin": "^3.2.3"
   }
 }

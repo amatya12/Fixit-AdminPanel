@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { List, Datagrid, TextField, Filter, TextInput, Edit, SimpleForm, Create, ArrayField, SingleFieldList, ChipField } from 'react-admin';
+import { List, Datagrid, TextField, Filter, TextInput, Edit, SimpleForm, Create, ArrayField, SingleFieldList, ChipField }
+    from 'react-admin';
 
 export const CategoryList = (props) => (
     <List filters={<CategoryFilter />} {...props} >
