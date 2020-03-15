@@ -7,10 +7,12 @@ import { UserList, UserCreate, } from './components/resources/user';
 import { CategoryList, CategoryCreate, CategoryEdit } from './components/resources/category';
 import { SubCategoryList, SubCategoryCreate, SubCategoryEdit, } from './components/resources/subCategory';
 import { DepartmentList, DepartmentCreate, DepartmentEdit } from './components/resources/department';
+import { IssueList } from './components/resources/issue';
 import UserIcon from '@material-ui/icons/Group';
 import RoleIcon from '@material-ui/icons/Accessibility';
 import CategoryIcon from '@material-ui/icons/Category';
 import SubCategoryIcon from '@material-ui/icons/ClassRounded';
+import IssueIcon from '@material-ui/icons/BugReport';
 import { RoleList, RoleCreate, RoleEdit } from './components/resources/role';
 import LoginPage from './components/Login/LoginForm';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
@@ -37,6 +39,7 @@ const App = () => (
     <Resource name="category" list={CategoryList} create={CategoryCreate} edit={CategoryEdit} icon={CategoryIcon} />
     <Resource name="subCategory" list={SubCategoryList} create={SubCategoryCreate} edit={SubCategoryEdit} icon={SubCategoryIcon} />
     <Resource name="department" list={DepartmentList} create={DepartmentCreate} edit={DepartmentEdit} icon={AccountBalanceIcon} />
+    <Resource name="issue" list={IssueList} icon={IssueIcon} />
   </Admin>
 );
 
