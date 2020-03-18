@@ -17,6 +17,13 @@ import { RoleList, RoleCreate, RoleEdit } from './components/resources/role';
 import LoginPage from './components/Login/LoginForm';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
+const requiresPermission = (requiredPerm, allPermissionsStr, view) => {
+  const allPermissions = allPermissionsStr.split(',');
+  if (allPermissions.indexOf(requiredPerm) >= 0)
+    return view;
+
+  return null;
+};
 
 const App = () => (
   <Admin
@@ -26,13 +33,52 @@ const App = () => (
     loginPage={LoginPage}
 
   >
-    {/* {permissions => [
-
-      permissions === 'admin' ? <Resource name="users" list={UserList} icon={UserIcon} /> : null,
-
-      permissions === 'moderator' ? <Resource name="roles" list={RoleList} icon={RoleIcon} /> : null
-
-    ]} */}
+    {permissions => [
+      requiresPermission(
+        'admin', permissions,
+        <Resource
+          name="user"
+          list={UserList}
+          icon={UserIcon}
+        />
+      ),
+      requiresPermission(
+        'admin', permissions,
+        <Resource name="category"
+          list={CategoryList}
+          create={CategoryCreate}
+          edit={requiresPermission('admin', permissions, CategoryEdit)}
+          icon={CategoryIcon}
+        />
+      ),
+      requiresPermission(
+        'admin', permissions,
+        <Resource
+          name="subCategory"
+          list={SubCategoryList}
+          create={SubCategoryCreate}
+          edit={SubCategoryEdit}
+          icon={SubCategoryIcon}
+        />
+      ),
+      requiresPermission(
+        'admin', permissions,
+        <Resource
+          name="issue"
+          list={IssueList}
+          edit={permissions === 'admin' ? IssueEdit : null}
+          icon={IssueIcon}
+        />
+      ),
+      requiresPermission(
+        'moderator', permissions,
+        <Resource
+          name="role"
+          list={RoleList}
+          icon={RoleIcon}
+        />
+      ),
+    ]}
 
     <Resource name="user" list={UserList} create={UserCreate} icon={UserIcon} />
     <Resource name="role" list={RoleList} create={RoleCreate} edit={RoleEdit} icon={RoleIcon} />
