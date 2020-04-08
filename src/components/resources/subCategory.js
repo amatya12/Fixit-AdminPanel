@@ -1,9 +1,27 @@
 import React from 'react';
 
-import { List, Datagrid, TextField, Filter, TextInput, Edit, SimpleForm, Create, ReferenceField, ReferenceInput, SelectInput } from 'react-admin';
+import { List, Datagrid, downloadCSV, TextField, Filter, TextInput, Edit, SimpleForm, Create, ReferenceField, ReferenceInput, SelectInput } from 'react-admin';
+import jsonExport from 'jsonexport/dist';
+const exporter = (subCategories, fetchRelatedRecords) => {
+    fetchRelatedRecords(subCategories, 'categoryId', 'category').then((category) => {
+        const data = subCategories.map(record => ({
+            Id: record.id,
+            SubCategoryName: record.subCategoryName,
+            Category_ID: record.categoryId,
+            Category_Name: category[record.categoryId].categoryName
+        }))
+        jsonExport(data, {
+        }, (err, csv) => {
+            downloadCSV(csv, 'SubCategories');
+        });
+    })
+}
+
+
+
 
 export const SubCategoryList = (props) => (
-    <List filters={<SubCategoryFilter />} {...props} >
+    <List filters={<SubCategoryFilter />} {...props} exporter={exporter}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="subCategoryName" />
