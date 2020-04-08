@@ -5,13 +5,14 @@ import {
     ReferenceInput, SelectInput, ImageField, ArrayField, SingleFieldList, ChipField, downloadCSV,
 } from 'react-admin';
 
-import { unparse as convertToCSV } from 'papaparse/papaparse.min';
+//import { unparse as convertToCSV } from 'papaparse/papaparse.min';
 import jsonExport from 'jsonexport/dist';
 
 import { CoordsField } from '../../views/coords';
 
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import * as R from 'ramda';
 
 const coloredStyles = {
     small: { color: 'black' },
@@ -19,23 +20,46 @@ const coloredStyles = {
 };
 
 const exporter = (issues, fetchRelatedRecords) => {
-    fetchRelatedRecords(issues, 'categoryId', 'category').then(category => {
+    fetchRelatedRecords(issues, 'categoryId', 'category').then((category) => {
         console.log(issues);
+        //console.log(subcategory);
         const data = issues.map(record => ({
-
             id: record.id,
             issue: record.issues,
             priority: record.priority,
             status: record.status,
             coordinates: `${record.coords.latitude}, ${record.coords.longitude}`,
             date_created: record.dateCreated,
-            category_name: category[record.categoryId].categoryName,
+            category_name: parseCategory(record.categoryId, category),
+            SubCategories: parseSubCategory(record.subCategoryId, category, record.categoryId)
         }))
+
         jsonExport(data, {
         }, (err, csv) => {
-            downloadCSV(csv, 'posts');
+            downloadCSV(csv, 'issue');
         });
     })
+}
+
+const parseCategory = (categoryId, category) => {
+    console.log(category, R);
+    return R.pipe(
+        R.filter(c => categoryId.indexOf(c.id) >= 0),
+        R.map(R.prop('categoryName')),
+        R.values,
+        R.join('|'),
+    )(category);
+}
+const parseSubCategory = (subCategoryId, category, categoryId) => {
+    const result = R.pipe(
+        R.map(R.prop('subCategories')),
+        R.values,
+        R.unnest,
+        R.filter(sc => subCategoryId.indexOf(sc.id) >= 0),
+        R.map(R.prop('subCategoryName')),
+        R.join('|')
+    )(category);
+    return result;
 }
 
 const ColoredNumberField = withStyles(coloredStyles)(
