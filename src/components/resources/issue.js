@@ -2,22 +2,23 @@ import React from 'react';
 
 import {
     List, Datagrid, TextField, Filter, TextInput, Edit, SimpleForm, Create, ReferenceManyField, ReferenceArrayField, ReferenceField,
-    ReferenceInput, SelectInput, ImageField, ArrayField, SingleFieldList, ChipField, downloadCSV,
+    ReferenceInput, SelectInput, ImageField, DateInput, SingleFieldList, ChipField, downloadCSV,
 } from 'react-admin';
-
-//import { unparse as convertToCSV } from 'papaparse/papaparse.min';
 import jsonExport from 'jsonexport/dist';
 
 import { CoordsField } from '../../views/coords';
-
-import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import { makeStyles } from '@material-ui/core/styles';
 import * as R from 'ramda';
 
-const coloredStyles = {
-    small: { color: 'black' },
-    big: { color: 'red' },
-};
+const useStyles = makeStyles({
+    pending: { color: 'red', fontWeight: "bold" },
+    fixed: { color: 'green', fontWeight: "bold" },
+    workinprogress: { color: 'skyblue', fontWeight: "bold" },
+    high: { color: 'red', fontWeight: 'bold' },
+    low: { color: 'green', fontWeight: 'bold' },
+    medium: { color: 'skyblue', fontWeight: 'bold' }
+});
 
 const exporter = (issues, fetchRelatedRecords) => {
     fetchRelatedRecords(issues, 'categoryId', 'category').then((category) => {
@@ -62,29 +63,35 @@ const parseSubCategory = (subCategoryId, category, categoryId) => {
     return result;
 }
 
-const ColoredNumberField = withStyles(coloredStyles)(
-    ({ classes, ...props }) => (
+const ColoredStatusField = props => {
+    const classes = useStyles();
+    return (
         <TextField
             className={classnames({
-                [classes.small]: props.record[props.source] = 'pending',
-                [classes.big]: props.record[props.source] = 'Fixed',
+                [classes.pending]: props.record[props.source] === 'pending',
+                [classes.fixed]: props.record[props.source] === 'fixed',
+                [classes.workinprogress]: props.record[props.source] === 'work-in-progress',
+                [classes.high]: props.record[props.source] === 'High',
+                [classes.low]: props.record[props.source] === 'Low',
+                [classes.medium]: props.record[props.source] === 'Medium'
             })}
             {...props}
         />
-    ));
-ColoredNumberField.defaultProps = TextField.defaultProps;
+    )
+}
+
+ColoredStatusField.defaultProps = TextField.defaultProps;
+
 export const IssueList = (props) => (
     <List filters={<IssueFilter />} {...props} exporter={exporter}>
-        <Datagrid rowClick="edit">
+        <Datagrid rowClick="edit" expand={<IssueEdit />}>
             <TextField source="id" />
-            <TextField source="issues" />
-
-            <TextField source="priority" style={{ color: 'red', fontWeight: 'bold' }} />
-
-            <ImageField source="imageUrl" />
+            <TextField source="issues" options={{ multiLine: true }} />
+            <ColoredStatusField source="priority" />
+            <ImageField label="Image" source="imageUrl" />
             <CoordsField source="coords" />
-            {/* //<TextField source="status" /> */}
-            <ColoredNumberField source="status" />
+            <ColoredStatusField source="status" />
+            <TextField source="dateCreated" />
             <ReferenceArrayField label="Category" reference="category" source="categoryId">
                 <SingleFieldList>
                     <ChipField source="categoryName" />
@@ -100,26 +107,41 @@ export const IssueList = (props) => (
     </List>
 );
 
+
+// export const IssueEdit = (props) => (
+//     <Edit title="Edit Issue" {...props}>
+//         <SimpleForm>
+//             <TextInput source="issues" options={{ multiLine: true }} />
+//             <TextInput source="priority" />
+//             <ImageField source="imageUrl" />
+//             <TextInput source="latitude" />
+//             <TextInput source="longitude" />
+//             <SelectInput source="status" choices={[
+//                 { id: 'pending', name: 'pending' },
+//                 { id: 'Fixed', name: 'Fixed' },
+//                 { id: 'Work at progress', name: 'Work at progress' },
+//             ]} />
+//             <ReferenceInput label="Category" source="categoryId" reference="category">
+//                 <SelectInput optionText="categoryName" />
+//             </ReferenceInput>
+//         </SimpleForm>
+//     </Edit>
+// );
+
+
 export const IssueEdit = (props) => (
     <Edit title="Edit Issue" {...props}>
         <SimpleForm>
-            <TextInput source="issues" />
-            <TextInput source="priority" />
-            <ImageField source="imageUrl" />
-            <TextInput source="latitude" />
-            <TextInput source="longitude" />
             <SelectInput source="status" choices={[
                 { id: 'pending', name: 'pending' },
-                { id: 'Fixed', name: 'Fixed' },
-                { id: 'Work at progress', name: 'Work at progress' },
-                { id: 'Within Few Days', name: 'Within Few Days' }
+                { id: 'fixed', name: 'fixed' },
+                { id: 'work-in-progress', name: 'work-in-progress' },
             ]} />
-            <ReferenceInput label="Category" source="categoryId" reference="category">
-                <SelectInput optionText="categoryName" />
-            </ReferenceInput>
         </SimpleForm>
     </Edit>
 );
+
+
 
 // export const CategoryCreate = (props) => (
 //     <Create title="create category" {...props}>
@@ -135,5 +157,42 @@ const IssueFilter = (props) => (
         <ReferenceInput label="Category" source="categoryId" reference="category" allowEmpty>
             <SelectInput optionText="categoryName" />
         </ReferenceInput>
+        <SelectInput label="Status" source="Status" choices={[
+            { id: 'Pending', name: 'pending' },
+            { id: 'Fixed', name: 'fixed' },
+            { id: 'Work-In-Progress', name: 'work-in-progress' },
+        ]}
+            allowEmpty
+
+        />
+        <SelectInput label="Priority" source="Priority" choices={[
+            { id: 'High', name: 'High' },
+            { id: 'Low', name: 'Low' },
+            { id: 'Medium', name: 'Medium' },
+        ]}
+            allowEmpty
+
+        />
+        <DateInput
+            source="FromDate"
+            label="From date:"
+
+            options={{
+                mode: "portrait",
+                locale: "nl"
+            }}
+            alwaysOn
+        />
+
+        <DateInput
+            source="ToDate"
+            label="To Date:"
+            options={{
+                mode: "portrait",
+                locale: "nl"
+            }}
+            alwaysOn
+        />
+
     </Filter>
 );
